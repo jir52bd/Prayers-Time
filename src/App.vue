@@ -1,9 +1,12 @@
 <script setup>
 import { onMounted, ref} from 'vue';
+// import fajr from './assets/prayer_times/fajr.png'; 
+
+// const fajr_img = fajr;
 
 const cityName = ref('');
 const prayerTimes = ref([]);
-console.log(prayerTimes);
+// console.log(prayerTimes);
 
 
 //AIP intregrating 
@@ -64,8 +67,20 @@ const formatTime = (time) => {
 const getPrayerName = (index) => {
   const prayerName = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
   return prayerName[index];
-}
+};
 
+//Map prayer names to corresponding image URls
+const getPrayerImage = (index) => {
+  const prayerNames = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+  const prayerImages = {
+    Fajr: require('@/assets/prayer_times/fajr.png'),
+    Dhuhr: require('@/assets/prayer_times/zuhr.png'),
+    Asr: require('@/assets/prayer_times/asr.png'),
+    Maghrib: require('@/assets/prayer_times/maghrib.png'),
+    Isha: require('@/assets/prayer_times/isha.png'),
+  };
+  return prayerImages[prayerNames[index]] || 'https://placehold.co/600x400/orange/white';
+};
 
 onMounted(() => {
   getLocation();
@@ -83,7 +98,8 @@ onMounted(() => {
        
         <ul>
           <li v-for="(time, index) in prayerTimes" :key="index">
-                <span>{{ getPrayerName(index)}}</span> <span>{{ formatTime(time)  }}</span>          
+                <span>{{ getPrayerName(index)}}</span> <span>{{ formatTime(time)  }}</span> 
+                <img :src="getPrayerImage(index)" alt="Prayer Image" />         
           </li>
         </ul>
 
@@ -99,5 +115,11 @@ onMounted(() => {
 }
 ul >li {
   list-style: none;
+}
+
+img {
+  width: 50px; /* Adjust the size as needed */
+  height: auto;
+  margin-left: 10px; /* Add spacing between text and image */
 }
 </style>
