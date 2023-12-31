@@ -8,14 +8,17 @@ console.log(prayerTimes);
 
 //AIP intregrating 
 
-const getPrayerTimes = async () =>{
+const getPrayerTimes = async (latitude, longitude) =>{
   try{
-      const response = await fetch('https://api.aladhan.com/v1/calendar/2017/4?latitude=51.508515&longitude=-0.1254872&method=2');
+      const response = await fetch(
+        `https://api.aladhan.com/v1/calendar?latitude=${latitude}&longitude=${longitude}&method=2`
+        );
       
       const data = await response.json();
       const timings = data.data[0].timings;
 
       console.log(timings);
+      //getting time zone according on API
       cityName.value = data.data[0].meta.timezone;
       prayerTimes.value = [timings.Fajr, timings.Dhuhr, timings.Asr, timings.Maghrib, timings.Isha];
 
@@ -25,6 +28,25 @@ const getPrayerTimes = async () =>{
 
   }
 };
+
+//findout latitude and longitude
+const getLocation = () => {
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const {latitude, longitude} = position.coords;
+        getPrayerTimes(latitude,longitude);
+      }, 
+      (error) =>{
+        console.error('Error getting user location: ', error);
+      }
+    );
+
+  }
+  else {
+    console.error('Geolocation is not supported by this browser.');
+  }
+}
 
 //Formate time in 12 hours clock
 const formatTime = (time) => {
@@ -38,6 +60,7 @@ const formatTime = (time) => {
   return formattedTime;
 };
 
+//Add corresponding Name of the prayers
 const getPrayerName = (index) => {
   const prayerName = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
   return prayerName[index];
@@ -45,7 +68,7 @@ const getPrayerName = (index) => {
 
 
 onMounted(() => {
-  getPrayerTimes();
+  getLocation();
 });
 
 
